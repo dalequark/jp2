@@ -1,0 +1,213 @@
+\documentclass[pageno]{jpaper}
+
+%replace XXX with the submission number you are given from the ISCA submission site.
+\newcommand{\IWreport}{2012}
+
+\usepackage[normalem]{ulem}
+\usepackage{setspace}
+\doublespacing
+
+\begin{document}
+
+\title{
+SRON: A Coordinated Overlay Network via Software-Defined Networking
+}
+\date{}
+\maketitle
+
+\thispagestyle{empty}
+
+\begin{abstract}
+
+In this paper, we consider the design and performance of a Software-Defined
+Resilient Overlay Network (SRON). While many overlay networks are deployed
+on end hosts where they are then configured in a distributed, autonomous
+fashion, our overlay network is run by switches coordinated by a controller
+that has a complete view of the switches in this overlay. 
+
+\end{abstract}
+
+\section{Introduction}
+
+The Internet was designed to be, above all else, scalable. This decision
+has allowed it to accommodate billions of users accross the world, and central
+to this ability is the fact that the Internet is a memory-less, datagram-switching
+network. Every router through which a packet passes determines only the next
+hop for that packet. As a consequence, however, this lack of central coordination
+may lead to sub-optimal routing decisions, and leaves the end hosts without a 
+say in the routing of their data.  For example, it is known that on a global 
+scale, path failures are common, and the Border Gateway Protocol (BGP)
+may take on the order of minutes to overcome outages\cite{ron}. Andersen et
+al. at MIT introduced RON, the design for a Resilient Overlay Network which
+would be deployed on end hosts across the Internet. Nodes in this overlay 
+were connected in a clique topology, with the edges between them being virtual
+links running over the Internet's own routing protocols.  This overlay was able
+to overcome outages much faster than the Internet alone, and has inspired
+much subsequent work.   
+
+
+\section{Past Work}
+- RON
+- Scalable Routing Overlay Networks
+- Jen's Paper on History of SDN
+- Maybe talk about BGP, etc?
+- what is planetlab?
+- TOR
+
+\section{A Software-Defined Approach}
+- need to mentino whatever is used in planetlab
+- use cases
+
+In the past, overlay networks have been deployed on end hosts and coordinated 
+in a distributed fashion.  Indeed this was a natural choice, since users of 
+overlay networks were often individuals scarcely located throughout the Internet--
+for example, users of the Tor Network, or video gamers.  A more centralized control
+would require nto only coordination amongst network users but also would likely have 
+significant bandwidth overhead.  If an overlay need be coordinated by a single entity,
+then there would have to be some efficient method of communication to that coordinator, but finding efficient routes between overlay nodes is exactly the problem that overlay networks are designed to solve--a chicken-and-egg problem.  
+
+In SRON, we consider a different application of overlay networks. Like a typical overlay,
+SRON consists of nodes that probe each other to determine link latencies, but these nodes
+are network switches rather than end hosts. Furthermore, a central SDN controller coordinates 
+the probing and routing rules of the switches in the network. At first blush, one might 
+wonder why an overlay network is necessary on a Software-Defined Network. After all, generally
+these networks are deployed by organizations that have entire control over the links in the 
+network (for example, a university network, or Google's private backbone). However, we imainge
+SRON being deployed on the networks of Internet providers that may span the globe, and who may
+need to pass data across other ISPs. In this case, we imagine that the network controller is 
+distributed, and the switches is controls are scattered across the globe. The links between 
+our switches are not physical links, but a sequence of hops across the Internet. Some of the 
+nodes in the multihop paths between switches may belong to the ISP deploying the overlay, 
+but others may be managed by other ISPs.  Thus the SRON overlay network model assumes that all
+nodes within it are fully connected, but that the links between them have varying performance 
+characteristics.
+
+Why is such a Software-Defined overlay useful? RON\cite{ron} showed that overlay networks can 
+perform significantly better than the raw Internet in terms of overcoming routing outages. That 
+being said, routing packets on end hosts has several disadvantages; for one, end hosts are 
+much slower at routing data than network switches, whose hardware is custom-tailored for this task.
+Second, because routing is done in a hierarchial fashion in the Internet, packets must pass 
+through many more hops to get to an end host (that is at the periphery of the Internet) than a 
+network switch. (Could you help me fill in the details with this?) 
+For example, suppose a host in the Computer Science Department at Princeton 
+were running an overlay node. While there is likely only a single Cisco switch allocated to all of 
+Princeton, a packet destined to be routed through our host node would have to pass first through this 
+switch, then through Princeton's University switches, then through the Computer Science Department
+routers, and back again.
+
+I would like this to be a section about other use cases for SRON. What about providing special services? 
+ 
+ 
+Such an SDN overlay 
+has several advantages over a typical 
+
+\section{Design of SRON}
+- built in python/pyretic
+- goal: probe all nodes in the network
+- decision: probe all single and double-hop routes.
+	- why? this is what the ron paper did
+	- it is *almost* impossible to get meaningful time metrics on links
+		- noncoordinated clocks
+		- solutions with end hosts only measure RTT
+		- time it takes to send messages from controller to switch back
+- multicast tree probing (what was that paper jen sent me?)
+- probing interval
+- only best route is kept
+- rules are then pushed to flow table
+- WHITE/BLACK to distinguish between probe sessions
+	- preferable: random sequence number
+	- how many bits are in the protocol field?
+
+\section{Evaluation}
+\subsection{Experimental Setup}
+\subsection{Discussion}
+	- concerns about how large this thing can grow
+
+\section{Conclusion}
+
+
+
+\section{Preparation Instructions}
+
+\subsection{Paper Formatting}
+
+There are no minimum or maximum length limits on IW reports.  
+We are including this template because we think it will be helpful
+for citing things properly and for including figures into formatted
+to typeset your paper, then we strongly suggest
+that you start from the template available at
+http://iw.cs.princeton.edu -- this
+document was prepared with that template.  
+If you are using a different software package to typeset your paper, 
+then you can still use this document as a reasonable sample of 
+how your report might look.  Table~\ref{table:formatting} is a suggestion
+of some formatting guidelines, as well as being an example of how to
+include a table in a Latex document.
+
+\begin{table}[h!]
+  \centering
+  \begin{tabular}{|l|l|}
+    \hline
+    \textbf{Field} & \textbf{Value}\\
+    \hline
+    \hline
+    Paper size & US Letter 8.5in $\times$ 11in\\
+    \hline
+    Top margin & 1in\\
+    \hline
+    Bottom margin & 1in\\
+    \hline
+    Left margin & 1in\\
+    \hline
+    Right margin & 1in\\
+    \hline
+    Body font & 12pt\\
+    \hline
+    Abstract font & 12pt, italicized\\
+    \hline
+    Section heading font & 12pt, bold\\
+    \hline
+    Subsection heading font & 12pt, bold\\
+    \hline
+  \end{tabular}
+  \caption{Formatting guidelines. }
+  \label{table:formatting}
+\end{table}
+
+\textbf{Please ensure that you include page numbers with your
+submission}. This makes it easier for readers to refer to
+different parts of your paper when they provide comments.
+
+We highly recommend you use bibtex for managing your references and citations.  You can add bib entries to a references.bib file throughout the semester (e.g. as you read papers) and then they will be ready for you to cite when you start writing the report.  If you use bibtex, please note that the references.bib file provided in the template example includes some format-specific incantations at the top of the file.  If you substitute your own bib file, you will probably want to include these 
+incantations at the top of it.
+
+\subsection{Citations}
+
+There are various reasons to cite prior work and include it as references in your bibliography.  For example, If you are improving upon 
+prior work, you should include
+You can also cite information that is used as background or explanation.  In addition to citing scholarly papers or books, you can also create bibtex entries for webpages or other sources.  Many online databases allow you to download a premade bibtex entry for each paper you access.  You can simply copy-paste these into your references.bib file.
+
+\noindent\textbf{Figures and Tables.} Ensure that the figures and
+tables are legible.  Please also ensure that you refer to your
+figures in the main text. Make sure that your figures will be legible
+in the expected forms that the report will be read.  If you expect someone
+to print it out in gray-scale, then make sure the figures are legible 
+when printed that way.  
+
+\noindent\textbf{Main Body.} Avoid bad page or column breaks in
+your main text, i.e., last line of a paragraph at the top of a
+column or first line of a paragraph at the end of a column. If you
+begin a new section or sub-section near the end of a column,
+ensure that you have at least 2 lines of body text on the same
+column. 
+
+\subsection{Ethics}
+
+Your independent work report should abide by the basic standards of scholarly ethics and by the Princeton Honor Code. If you have any doubts about how to cite
+other work, how to quote or include text or images from other works, or other issues, please discuss them with your project adviser or with the IW coordinators. 
+\bstctlcite{bstctl:etal, bstctl:nodash, bstctl:simpurl}
+\bibliographystyle{IEEEtranS}
+\bibliography{references}
+
+\end{document}
+
