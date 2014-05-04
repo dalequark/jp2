@@ -5,6 +5,8 @@
 
 \usepackage[normalem]{ulem}
 \usepackage{setspace}
+\usepackage{listings}
+\usepackage{color}
 \doublespacing
 
 \begin{document}
@@ -141,9 +143,6 @@ routers, and back again.
 
 \section{Design of SRON}
 
-\subsection{Pyretic}
-Dicuss what Pyretic is, why I'm using it
-
 \subsection{Probing Scheme}
 
 {\bf Rational/all the reasons why probing other ways doesn't work}\bigskip
@@ -247,6 +246,44 @@ number. Something similar to ACK sequence numbers.
 \subsection{Learning IPs}
 The lazy way: when a new IP comes in, register it with the switch it came in on.
 
+
+\section{Implementation}
+\subsection{Pyretic}
+	We decided to build SRON in Pyretic\cite{pyretic}, a Python platform for programming SDNs.  Most major switch vendors support the OpenFlow API for programming switches, but writing OpenFlow messages directly is tedious, akin to programming in assembly. Pyretic sits above an OpenFlow controller platform (in our case, POX\cite{pox}), and allows programmers to write SDN programs in a high-level, modular way.  For example, consider the following excerpt from SRON that updates the network routing policy:\bigskip
+
+
+
+\lstset{ %
+language=Python,                % choose the language of the code
+basicstyle=\ttfamily\scriptsize,
+keywordstyle=\color{blue}\bfseries,
+stringstyle=\color{red}\ttfamily,
+commentstyle=\color{purple}\ttfamily,
+showspaces=false,               % show spaces adding particular underscores
+showstringspaces=false,         % underline spaces within strings
+showtabs=false,                 % show tabs within strings adding particular underscores
+frame=single,           % adds a frame around the code
+tabsize=2,          % sets default tabsize to 2 spaces
+captionpos=b,           % sets the caption-position to bottom
+breaklines=true,        % sets automatic line breaking
+breakatwhitespace=false,    % sets if automatic breaks should only happen at whitespace
+escapeinside={\%*}{*)}          % if you want to add a comment within your code
+}
+
+	\begin{lstlisting}
+	 def updatePolicy(self):
+		print "Updating policy..."
+		# probingPolicy explains how probes should be routed. self.query explains how the controller should log receieved probes
+		probingPolicy = self.metricsPolicy + self.query
+
+		# If a reRoutingPolicy has been created based on probe metrics, use it. Otherwise revert to a mac learner.
+		if self.reRoutingPolicy:	
+			self.policy = if_(match(srcip= PROBEIP), probingPolicy, self.reRoutingPolicy)
+		else:
+			self.policy = if_(match(srcip= PROBEIP), probingPolicy, self.macLearn)
+	\end{lstlisting} 
+
+We use the {\tt if\_({\it predicate}, policy1, policy2) } to indicate that all switches recieving a packet with source ip $PROBEIP$ should route that packet using {\tt probingPolicy}, which includes both forwarding that probe over all ports or dropping it (depending on whether the switch receiving this packet is the first or second hop on its path), as well as sending the packet up to the controller to be logged.  If the packet is not a probe packet, then it should either be routed via the {\tt reRoutingPolicy} or, if no such policy exists (for example, when the network is first brought up), should be routed via a simple mac learning module.  Note that rules in Pyretic are not written for individual switches.  Rather, rules for routing packets throughout the entire network are updated when the variable {\tt self.Policy} (where here the parent object is of type {\tt DynamicPolicy}) is updated.  Instructing only a particular switch to perform an action can be specified by creating a rule of the form: {\tt match(switch=someSwitch) >> somePolicy}.  Indeed Pyretic makes SDN programming concise. SRON is written only about 300 lines of Python.
 
 \section{Evaluation}
 \subsection{Experimental Setup}
