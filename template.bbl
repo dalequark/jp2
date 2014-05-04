@@ -29,4 +29,19 @@ D.~Andersen, H.~Balakrishnan, F.~Kaashoek, and R.~Morris, ``Resilient overlay
   \url{http://doi.acm.org/10.1145/502059.502048}
 \BIBentrySTDinterwordspacing
 
+\bibitem{ospfrfc}
+R.~Coltun, ``Ospf for ipv6,'' 7 2008.
+
+\bibitem{labovitz}
+\BIBentryALTinterwordspacing
+C.~Labovitz, A.~Ahuja, A.~Bose, and F.~Jahanian, ``Delayed internet routing
+  convergence,'' \emph{SIGCOMM Comput. Commun. Rev.}, vol.~30, no.~4, pp.
+  175--187, Aug. 2000. [Online]. Available:
+  \url{http://doi.acm.org/10.1145/347057.347428}
+\BIBentrySTDinterwordspacing
+
+\bibitem{varadhan}
+K.~Varadhan, R.~Govindan, and D.~Estrin, ``Persistent route oscillations in
+  inter-domain routing,'' \emph{Computer Network}, vol.~32, pp. 1--16, 2000.
+
 \end{thebibliography}

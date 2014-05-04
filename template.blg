@@ -8,6 +8,8 @@ Reallocated singl_function (elt_size=4) to 100 items from 50.
 Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
 Reallocated singl_function (elt_size=4) to 100 items from 50.
 Database file #1: references.bib
+Warning--entry type for "ospfrfc" isn't style-file defined
+--line 44 of file references.bib
 Warning--I didn't find a database entry for "bstctl:etal"
 Warning--I didn't find a database entry for "bstctl:nodash"
 Warning--I didn't find a database entry for "bstctl:simpurl"
@@ -17,45 +19,45 @@ Warning--I didn't find a database entry for "bstctl:simpurl"
 ** Sorting version - not for normal IEEE work.
 
 Done.
-You've used 1 entry,
+You've used 4 entries,
             4498 wiz_defined-function locations,
-            902 strings with 8181 characters,
-and the built_in function-call counts, 1267 in all, are:
-= -- 109
-> -- 34
-< -- 11
-+ -- 18
-- -- 8
-* -- 85
-:= -- 207
-add.period$ -- 2
-call.type$ -- 1
-change.case$ -- 7
-chr.to.int$ -- 24
-cite$ -- 1
-duplicate$ -- 69
-empty$ -- 71
-format.name$ -- 9
-if$ -- 261
+            920 strings with 8551 characters,
+and the built_in function-call counts, 3698 in all, are:
+= -- 336
+> -- 99
+< -- 28
++ -- 51
+- -- 24
+* -- 209
+:= -- 592
+add.period$ -- 8
+call.type$ -- 4
+change.case$ -- 24
+chr.to.int$ -- 60
+cite$ -- 4
+duplicate$ -- 226
+empty$ -- 238
+format.name$ -- 27
+if$ -- 799
 int.to.chr$ -- 0
-int.to.str$ -- 1
-missing$ -- 11
-newline$ -- 28
-num.names$ -- 2
-pop$ -- 23
+int.to.str$ -- 4
+missing$ -- 38
+newline$ -- 39
+num.names$ -- 8
+pop$ -- 89
 preamble$ -- 1
-purify$ -- 6
+purify$ -- 20
 quote$ -- 2
-skip$ -- 84
+skip$ -- 263
 stack$ -- 0
-substring$ -- 62
-swap$ -- 66
-text.length$ -- 3
+substring$ -- 163
+swap$ -- 193
+text.length$ -- 8
 text.prefix$ -- 0
 top$ -- 6
-type$ -- 11
+type$ -- 44
 warning$ -- 0
-while$ -- 6
-width$ -- 2
-write$ -- 36
-(There were 3 warnings)
+while$ -- 19
+width$ -- 5
+write$ -- 67
+(There were 4 warnings)
