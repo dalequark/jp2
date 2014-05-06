@@ -26,6 +26,11 @@
  [Online]. Available: \url{http://www.noxrepo.org/pox/about-pox/}
 \BIBentrySTDinterwordspacing
 
+\bibitem{planetlab}
+\BIBentryALTinterwordspacing
+(2012, 09) Planetlab. [Online]. Available: \url{http://www.planet-lab.org/}
+\BIBentrySTDinterwordspacing
+
 \bibitem{ron}
 \BIBentryALTinterwordspacing
 D.~Andersen, H.~Balakrishnan, F.~Kaashoek, and R.~Morris, ``Resilient overlay
@@ -93,6 +98,13 @@ N.~McKeown, T.~Anderson, H.~Balakrishnan, G.~Parulkar, L.~Peterson, J.~Rexford,
   networks,'' \emph{SIGCOMM Comput. Commun. Rev.}, vol.~38, no.~2, pp. 69--74,
   Mar. 2008. [Online]. Available:
   \url{http://doi.acm.org/10.1145/1355734.1355746}
+\BIBentrySTDinterwordspacing
+
+\bibitem{Nakao:2006:SRO:1113361.1113372}
+\BIBentryALTinterwordspacing
+A.~Nakao, L.~Peterson, and A.~Bavier, ``Scalable routing overlay networks,''
+  \emph{SIGOPS Oper. Syst. Rev.}, vol.~40, no.~1, pp. 49--61, Jan. 2006.
+  [Online]. Available: \url{http://doi.acm.org/10.1145/1113361.1113372}
 \BIBentrySTDinterwordspacing
 
 \bibitem{pyretic}
