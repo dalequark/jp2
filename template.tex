@@ -21,11 +21,25 @@ SRON: A Coordinated Overlay Network via Software-Defined Networking
 
 \begin{abstract}
 
-In this paper, we consider the design and performance of a Software-Defined
+	In this paper, we consider the design and performance of a Software-Defined
 Resilient Overlay Network (SRON). While many overlay networks are deployed
 on end hosts where they are then configured in a distributed, autonomous
-fashion at the ``edge'' of the invernet, our overlay network is run by switches coordinated by a controller
-that has a complete view of the switches in this overlay. 
+fashion at the ``edge'' of the Internet, our overlay network is run on backbone
+switches that support the OpenFlow protocol, and 
+whose routing tables are coordinated by a centralized controller.  Running 
+an overlay on network switches allows our overlay nodes to route packets with much higher
+bandwidth than overlay nodes that run on end hosts, since the hardware in backbone
+switchs is tailored to routing a large number of packets quickly.  Furthermore, while data forwarded 
+over end host overlay nodes must pass through many hops from the Internet backbone to peripheral
+end hosts, routing through switch allows data to stay within the backbone, cutting out
+several slow hops at the periphery of the network.  The fact that SRON is coordinated by 
+a central OpenFlow controller also allows us to use novel probing techniques that would be impossible in a 
+distributed overlay; for example, SRON is able to compare the performance of unidirectional 
+paths between overlay nodes, whereas in all overlay designs of which the author is aware, only round trip path 
+performance is measured.  This centralized controller also means that SRON is able to avoid
+generating transient routing loops, since when the controller pushes routing updates to switches, it has 
+full knowledge of the routing rules on all switches in the network.
+	As SRON is designed to implemented on SDN switches distributed throughout the Internet, we imagine ISPs may use SRON to make more intelligent routing decisions across AS boundaries. 
 
 \end{abstract}
 
@@ -46,7 +60,7 @@ Systems (AS's).  Andersen, Balakrishnan, Kaashoek, and Morris note that
 scalability and policy enforcement, has little information about traffic conditions,
 and damps routing updates when potential problems arise to prevent large-scale
 oscillations''\cite{ron}.  
-While the design of the Internet may be suited to an ever-expending network 
+While the design of the Internet may be suited to an ever-expanding network 
 of hosts, a small set of network nodes that wish only to communicate amongst
 themselves may be able to, by sacrificing the ability to scale to an arbitrary
 number of nodes, make better routing decisions than the Internet alone.
@@ -85,9 +99,20 @@ pass a client's data to another AS so that it has more capacity on its infrastru
 even if such a path is sub-optimal.  Varadhan, Govindan, and Estrin proved that BGP
 policies may not even lead to routing convergence--that is, AS's may choose to 
 route in such a way that leads to persisent oscillations\cite{varadhan}.  Labovitz et al.\cite{labovitz}
-conducted a two year study of Internet routing convergence and found router may take tens of minutes to converge after a fault due to BGP's routing table oscillations.  The creators of 
-RON found that an overlay network with a limited number of nodes could overcome outages
-and find lower-latency paths much more quickly than BGP alone.
+conducted a two year study of Internet routing convergence and found router may take tens of minutes to converge after a fault due to BGP's routing table oscillations. 
+
+\subsection{Overlay Networks}
+Overlay networks have been deployed to support several applications that the Internet
+alone cannot; for example, Content Distribution Networks (CDN's) are overlays that 
+dynamically cache content across the Internet and deliver it to end users to avoid congestion.
+Today, CDN's make up the bulk of overlay traffic\cite{kurian}.\bigskip
+IP multicast--the method of sending a single packet to multiple receievers in a single transmission--has also been cited as a promising application of overlays.  IP multicast makes applications with multiple receievers more efficient, but is difficult to deploy and today is mostly implemented within a single domain rather than spanning multiple domains\cite{kurian}.  MBone\cite{Macedonia:1994:MPA:618987.620017} was an early overlay that attempted to connect multicast domains by using IP tunneling to transport data across domain boundaries.  Unfortunately, MBone experienced unreliability, heavy loss, and low throughput\cite{kurian}.  Narada\cite{Banerjee:2002:SAL:964725.633045} was proposed as an application-layer alternative to IP multicast, in which overlay nodes created their own routing mesh atop the Internet and serviced multicast in this way.\bigskip
+Another important application of overlay networks is end-to-end performance and resiliency; The Detour\cite{Savage:1999:DII:623285.624244} overlay used 45 distributed servers to probe paths between them using the traceroute program; they were curious to know whether or not data could be routed from points A to B more efficiently by routing data through one of their overlay nodes C (i.e. could they choose faster routing paths than the Ineternet natively).  For roughly half of the paths they measured, they found an alternative route which was faster.  RON\cite{ron} was an overlay network that, inspired by the findings of Detour, used frequent probing in combination with link state routing to find low-latency or high-bandwidth paths between overlay nodes.  RON was implemented as on end hosts, and these overlay nodes were arranged in a fully connected mesh.  The fact that RON was fully connected--each of RON's $n$ nodes had $(n-1)$ neighbors--and used frequent probing meant that it could not (and was not intended to) scale beyond about fifty nodes.  However, a 12 node RON overlay was still able to overcome almost all routing outages in under twenty seconds.
+Later modifications to the basic RON design allowed for overlay networks that could find paths with similar performance to RON nodes with much less probing.  One of the most interesting of such techniques which is quite similar to the probing design of SRON is work by Gummadi et al.\cite{Gummadi:2004:IRI:1251254.1251267}; in this mesh, routing is done as follows: when a node at $A$ wants to send data to $B$, it randomly chooses $k$ nodes in the overlay and routes through them; it then uses the intermediary with the first response to route all subsequent packets, and if at any time this path becomes unresponses, it chooses a second random $k$ nodes and tries again.  They found that $k=4$ gives near maximum benefits. 
+
+
+\subsection{Software-Defined Networking}
+SRON is implemented on a Software-Defined Network--that is, a network on which routers and switches are programmable, and whose routing rules can be updated dynamically from an SDN controller.  In SDN, the {\it control plane}, which makes decisions about how traffic should be handled, is seperated from the {\it data plane}, which itself forwards the traffic\cite{Feamster:2014:RSI:2602204.2602219}.  The control plane is embodied by an SDN controller which communicates with network switches and routers in the data plane via an API.  In SRON, we use a popular API known as OpenFlow\cite{McKeown:2008:OEI:1355734.1355746}, a protocol supported by most major switch vendors.  
 
 \section{A Software-Defined Approach}
 
@@ -236,15 +261,11 @@ By this metric, we migrate from $p$ to $p'$ when $p'$ performs 30\% better than 
 
 
 
-\subsection{Dealing with Delayed Packets}
-I do this using a random sequence numbered that is stored in the ``protocol'' field of each packet 
-(that's 16 bits). The controller does not acknowlegde packets that arrive with an out-of-date sequence
-number. Something similar to ACK sequence numbers.
-
+\subsection{Delayed Probes}
 
 
 \subsection{Learning IPs}
-The lazy way: when a new IP comes in, register it with the switch it came in on.
+Because SRON routes at the IP level, it must have a way of dynamically associating IP addresses with switches.  We achieve this in a way similar to how switches learn MAC-to-port mappings.  When a switch receieves a packet with an unrecognized source IP address, it sends the packet to the controller.  If, for example, the incoming packet enters the network on $Switch_A$ and has IP 10.0.0.1, the controller logs this association.  It then examines all rules it has for routing between other switches in the network and $Switch_A$ (as determined by probing as described above).  The controller then updates all switches in the network to use this best path to route all packets with the destination IP address 10.0.0.1.  If, on the other hand, a switch recieves a packet with an unknown destination IP, it sends the packet to an underlying mac learning module which forwards the packet to all ports along the network minimum spanning tree.  
 
 
 \section{Implementation}
@@ -287,9 +308,10 @@ We use the {\tt if\_({\it predicate}, policy1, policy2) } to indicate that all s
 
 \section{Evaluation}
 \subsection{Experimental Setup}
-Comparison with the mac learner module. We vary pobe frequency, size of the network etc.
+Comparison with the mac learner module. We vary probe frequency, size of the network etc.
 Using Harpoon, mininet.
 
+\subsection{Results}
 \subsection{Discussion}
 \begin{enumerate}
 \item
@@ -302,11 +324,27 @@ Would have liked to compare to how RON performs
 Deploy on PlanetLab, too, would have been nice
 \end{enumerate}
 
+\subsection{Future Work}
+
+	It is difficult for any network simulation to capture all of the subtleties of real 
+Internet traffic, and indeed our Mininet simulation of the Internet cannot give us 
+full confidence that SRON will perform similarly when deployed when an ISP across the globe.
+In the future, we would like to test SRON's performance when deployed on a PlanetLab\cite{planetlab} 
+slice.  PlanetLab is a network of computers consisting of over 1090 nodes at 507 sites worldwide, 
+which is designed for testing experimental network and distributed systems research projects.  With a 
+virtual machine or ``slice'' of the PlanetLab network, we could test SRON across AS boundaries and with 
+real network traffi, so that 
+the difficult-to-predict decisions of BGP's policy-based routing could be compared with SRON.
+
+As for making SRON ready for deployment, the current software design is closely tied to the original design of 
+RON, which has since been improved upon in work by Nakao et al. \cite{Nakao:2006:SRO:1113361.1113372}, Gummadi et al.\cite{Gummadi:2004:IRI:1251254.1251267}, and more.  As metioned in Section 2, this research has discovered techniques to reduce the amount of probing between nodes as well as ways to more intelligently use knowledge about the real network topology to design the overlay network topology.
+
 \section{Conclusion}
 
+\section{Acknowledgements}
+This work would have been impossible without the constant guidance and feedback of Jennifer Rexford.
 
 
-\section{Preparation Instructions}
 \bstctlcite{bstctl:etal, bstctl:nodash, bstctl:simpurl}
 \bibliographystyle{IEEEtranS}
 \bibliography{references}
